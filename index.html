@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>汉语闯关 · Hành trình Hán ngữ B13-18</title>
+<style>
+:root{--bg:#fff3f6;--c:#fff;--t:#3b2a33;--a:#e8618c;--a2:#c7456f;--g:#3fb984;--g2:#2c9468;--r:#ef6666;--r2:#c94b4b;--m:#9a8490;--l:#f6d9e3;--mint:#e4f7ee;--sun:#fff4cf}
+@media(prefers-color-scheme:dark){:root{--bg:#231b20;--c:#322730;--t:#f8e9ef;--m:#bba5b0;--l:#50404a;--mint:#243b32;--sun:#3d3624;--a:#f27ca0}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);background-image:radial-gradient(var(--l) 1.5px,transparent 1.5px);background-size:24px 24px;color:var(--t);font:16px/1.55 ui-rounded,"Nunito",system-ui,"Microsoft YaHei","PingFang SC",sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px}h1{font-size:23px;margin:4px 0}
+.paper{background:var(--c);border:2px dashed var(--l);border-radius:24px;padding:18px;margin:12px 0;box-shadow:0 6px 0 var(--l)}
+.head{display:flex;align-items:center;gap:12px}.mas{font-size:48px;line-height:1}
+button{font:inherit;font-weight:600;cursor:pointer;border:2px solid var(--l);border-bottom-width:5px;background:var(--c);color:var(--t);border-radius:16px;padding:10px 16px}
+button:active{transform:translateY(3px);border-bottom-width:2px}button:disabled{opacity:.75;cursor:default}
+button.p{background:var(--a);border-color:var(--a2);color:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:520px){.grid{grid-template-columns:1fr}}
+.opt{text-align:left;font-size:19px;width:100%;margin:6px 0}.opt.ok{background:var(--g);border-color:var(--g2);color:#fff}.opt.no{background:var(--r);border-color:var(--r2);color:#fff}
+.s{font-size:25px;line-height:1.9}.blank{border-bottom:3px dotted var(--a);padding:0 16px}.hl{color:var(--a2);font-weight:800;background:var(--sun);border-radius:6px;padding:0 3px}
+.m{color:var(--m);font-size:14px}.bar{height:12px;background:var(--l);border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#ffb3c8,var(--a));border-radius:8px;transition:width .3s}
+.hud{display:flex;justify-content:space-between;color:var(--m);font-size:14px;margin:6px 0}.tag{display:inline-block;background:var(--sun);border-radius:20px;padding:2px 12px;font-weight:700;color:var(--t);font-size:14px}
+input[type=text]{font:inherit;font-size:22px;width:100%;padding:12px;border-radius:16px;border:3px solid var(--l);background:var(--c);color:var(--t)}
+.fb{margin-top:14px;padding:14px;border-radius:16px;background:var(--mint)}.fb.no{background:var(--sun)}.good{color:var(--g2)}.bad{color:var(--r2)}
+.chip{display:inline-block;font-size:22px;margin:4px;padding:8px 14px}.slot{min-height:62px;border-bottom:3px dotted var(--l);margin:10px 0}
+.lv{display:flex;gap:6px;flex-wrap:wrap}.lv label{border:2px solid var(--l);border-radius:14px;padding:6px 10px;background:var(--c);cursor:pointer}
+.stamp{display:inline-block;border:4px solid var(--a);color:var(--a);border-radius:50%;width:110px;height:110px;line-height:100px;font-size:34px;font-weight:800;transform:rotate(-12deg)}
+.sc{font-size:54px;font-weight:800;color:var(--a)}
+.opt.sel{background:var(--sun);border-color:var(--a)}.nav{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}
+.nav button{padding:3px 0;width:38px;border-bottom-width:3px;font-size:13px;border-radius:10px}.nav .done{background:var(--mint)}.nav .cur{outline:3px solid var(--a)}
+</style></head><body><main><div id="app"></div></main>
+<script src="js/data.js"></script>
+<script>
+const D=RAW.trim().split('\n').map((l,i)=>{const[a,w,v,s]=l.split('|');return{id:'s'+String(i+1).padStart(2,'0'),l:+a,w,v,s}});
+const $=q=>document.querySelector(q),app=$('#app'),norm=s=>s.replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g,''),idx=it=>D.indexOf(it);
+const K='hy13exam',DK='hy13draft',ld=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const rnd=(()=>{let a=20261021;return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}})();
+const shS=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=rnd()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const cloze=it=>it.s.replace(it.w,'<span class="blank">　　</span>'),hl=it=>it.s.replace(it.w,`<span class="hl">${it.w}</span>`);
+function tts(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='zh-CN';u.rate=.8;speechSynthesis.speak(u)}catch(e){}}
+function play(it){const a=new Audio('audio/'+it.id+'.mp3');a.onerror=()=>tts(it.s);a.play().catch(()=>{})}window.play=i=>play(D[i]);
+const chunks=s=>{const o=[];s.replace(/[。？！]$/,'').split(/[，、；：]/).forEach(c=>{if(!c)return;const k=Math.ceil(c.length/4),z=Math.ceil(c.length/k);for(let i=0;i<c.length;i+=z)o.push(c.slice(i,i+z))});return o};
+const SEC={listen:'🎧 一、听力 · Nghe',read:'📖 二、阅读 · Đọc',type:'✍️ 三、书写 · Viết',order:'✍️ 三、书写 · Viết',dict:'✍️ 三、书写 · Viết'},G=t=>t=='listen'?'听':t=='read'?'读':'写';
+let S={};
+function build(){const ids=shS(D),L=ids.slice(0,18),Rd=ids.slice(18,36),W=ids.slice(36),ord=W.filter(x=>chunks(x.s).length>=3).slice(0,6),rest=W.filter(x=>!ord.includes(x));
+ const q=[...L.map(it=>({t:'listen',it,opts:shS([it,...shS(D.filter(y=>y!=it)).slice(0,3)]),ans:null})),
+ ...Rd.map(it=>({t:'read',it,opts:shS([it,...shS(D.filter(y=>y.w!=it.w)).slice(0,3)]),ans:null})),
+ ...shS([...ord.map(it=>({t:'order',it,pc:shS(chunks(it.s).map((c,i)=>({c,i}))),an:[]})),...rest.map((it,i)=>({t:i%2?'dict':'type',it,ans:''}))])];return q}
+function intro(){const r=ld(K);if(r)return result(r);const d=ld(DK)||{};
+ app.innerHTML=`<div class=paper><div class=head><span class=mas>🐼</span><div><h1>期中考试 · Thi giữa kỳ</h1><div class=m>Hán ngữ · Bài 13–18</div></div></div></div>
+<div class=paper><p><b>📝 Họ tên:</b> <input type=text id=nm value="${d.name||''}" placeholder="Nhập họ tên…" style="font-size:18px"></p>
+<p><b>🌸 Thể lệ:</b></p><p class=m>• Bài thi gồm <b>54 câu</b>, mỗi từ trong bài 13–18 xuất hiện đúng một lần: 一、听 18 câu · 二、读 18 câu · 三、写 18 câu (mỗi phần 100 điểm, tổng 300 điểm).<br>• Chỉ được nộp bài <b>một lần duy nhất</b>; sau khi nộp không thể làm lại.<br>• Không giới hạn thời gian. Có thể quay lại sửa đáp án trước khi nộp; bài tự lưu nếu lỡ tải lại trang.<br>• Được nghe lại audio nhiều lần. Câu nghe chép: chỉ gõ chữ, không cần cách chữ và dấu câu.<br>• Trong lúc làm bài không hiện đáp án đúng.</p>
+<button class=p style="width:100%" onclick="begin()">✏️ Bắt đầu làm bài</button></div>`}
+function begin(){const n=$('#nm').value.trim();if(!n)return alert('Vui lòng nhập họ tên.');S={q:build(),i:0,name:n};const d=ld(DK);
+ if(d&&d.name==n&&d.a){S.i=d.i||0;d.a.forEach((v,k)=>{const q=S.q[k];if(!q)return;if(q.t=='order'){const all=[...q.pc];q.an=(v||[]).map(i=>all.find(p=>p.i==i)).filter(Boolean);q.pc=all.filter(p=>!q.an.includes(p))}else q.ans=v})}
+ save();show()}
+const save=()=>sv(DK,{name:S.name,i:S.i,a:S.q.map(q=>q.t=='order'?q.an.map(x=>x.i):q.ans)});
+const dn=q=>q.t=='order'?q.an.length>0:q.t=='listen'||q.t=='read'?q.ans!==null:String(q.ans).trim()!=='';
+function show(){const q=S.q[S.i],k=idx(q.it),N=S.q.length;
+ let h=`<div class=hud><span class=tag>${SEC[q.t]}</span><span>Câu ${S.i+1}/${N}</span></div><div class=bar><i style="width:${S.q.filter(dn).length/N*100}%"></i></div><div class=paper>`;
+ if(q.t=='listen')h+=`<p>👂 Nghe và chọn câu đúng:</p><button class=p onclick="play(D[${k}])">▶ Nghe</button>`+q.opts.map((x,j)=>`<button class="opt${q.ans===j?' sel':''}" onclick="ch(${j})">${x.s}</button>`).join('');
+ if(q.t=='read')h+=`<p>📖 Chọn từ thích hợp điền vào chỗ trống:</p><div class=s>${cloze(q.it)}</div>`+q.opts.map((x,j)=>`<button class="opt${q.ans===j?' sel':''}" onclick="ch(${j})">${x.w}</button>`).join('');
+ if(q.t=='type')h+=`<p>✍️ Gõ từ còn thiếu (nghĩa: <b>${q.it.v}</b>):</p><div class=s>${cloze(q.it)}</div><input type=text value="${q.ans}" autocomplete=off oninput="S.q[S.i].ans=this.value;save()">`;
+ if(q.t=='dict')h+=`<p>🎧 Nghe và chép lại cả câu:</p><p class=m style="margin-top:-8px">📝 Lưu ý: chỉ cần gõ chữ, viết liền, <b>không cần cách chữ</b> và <b>không cần dấu câu</b>.</p><button class=p onclick="play(D[${k}])">▶ Nghe</button><input type=text style="margin-top:10px" value="${q.ans}" autocomplete=off oninput="S.q[S.i].ans=this.value;save()">`;
+ if(q.t=='order')h+=`<p>🧩 Sắp xếp các mảnh thành câu đúng (từ <b>${q.it.w}</b>: ${q.it.v}):</p><div class=slot id=an></div><div id=pc></div>`;
+ h+=`</div><div class=nav>${S.q.map((x,j)=>`<button class="${dn(x)?'done ':''}${j==S.i?'cur':''}" onclick="jump(${j})">${j+1}</button>`).join('')}</div>
+ <p><button onclick="jump(S.i-1)" ${S.i?'':'disabled'}>← Câu trước</button> <button class=p onclick="jump(S.i+1)" ${S.i<N-1?'':'disabled'}>Câu tiếp →</button> <button class=p style="background:var(--g);border-color:var(--g2)" onclick="submit()">📮 Nộp bài</button></p>`;
+ app.innerHTML=h;if(q.t=='order')draw();if((q.t=='listen'||q.t=='dict')&&!q.pl){q.pl=1;setTimeout(()=>play(q.it),300)}}
+function jump(i){if(i<0||i>=S.q.length)return;S.i=i;save();show();window.scrollTo&&scrollTo(0,0)}
+function ch(j){S.q[S.i].ans=j;save();show()}
+function draw(){const q=S.q[S.i];$('#an').innerHTML=q.an.map(x=>`<button class=chip onclick="mv(${x.i},0)">${x.c}</button>`).join('');$('#pc').innerHTML=q.pc.map(x=>`<button class=chip onclick="mv(${x.i},1)">${x.c}</button>`).join('')}
+function mv(i,f){const q=S.q[S.i],[a,b]=f?[q.pc,q.an]:[q.an,q.pc];b.push(a.splice(a.findIndex(x=>x.i==i),1)[0]);save();draw();const bar=$('.bar i');if(bar)bar.style.width=S.q.filter(dn).length/S.q.length*100+'%'}
+const right=q=>q.t=='listen'?q.ans!==null&&q.opts[q.ans]==q.it:q.t=='read'?q.ans!==null&&q.opts[q.ans].w==q.it.w:q.t=='type'?String(q.ans).trim()==q.it.w:q.t=='dict'?norm(String(q.ans))==norm(q.it.s):norm(q.an.map(x=>x.c).join(''))==norm(q.it.s);
+function submit(){const un=S.q.filter(q=>!dn(q)).length;if(!confirm(un?`Còn ${un} câu chưa làm. Bạn chắc chắn muốn nộp bài? (chỉ được nộp một lần)`:'Nộp bài? Sau khi nộp sẽ không thể làm lại.'))return;
+ const sec={听:[0,0],读:[0,0],写:[0,0]},wrong=[];let ok=0;S.q.forEach((q,i)=>{const g=sec[G(q.t)];g[1]++;if(right(q)){ok++;g[0]++}else wrong.push(i+1)});
+ const pt={};let tot=0;for(const k in sec){pt[k]=Math.round(sec[k][0]/sec[k][1]*1000)/10;tot+=pt[k]}tot=Math.round(tot*10)/10;const r={name:S.name,date:new Date().toLocaleString('vi-VN'),ok,n:S.q.length,pt,score:tot,sec,wrong};r.lan=(+ld('hy13n')||0)+1;sv('hy13n',r.lan);sv(K,r);try{localStorage.removeItem(DK)}catch(e){}result(r)}
+function result(r){const av=r.score/3,st=av>=90?'优秀':av>=75?'良好':av>=60?'及格':'加油';let code='';try{code=btoa(unescape(encodeURIComponent(JSON.stringify({n:r.name,d:r.date,s:r.score,pt:r.pt,a:r.lan,ok:r.ok,sec:r.sec,w:r.wrong}))))}catch(e){}
+ app.innerHTML=`<div class=paper style="text-align:center"><span class=mas>🐼</span><h1>Bài thi đã được nộp 📮</h1><div class=m>Họ tên: <b>${r.name}</b> · ${r.date}</div>
+ <div class=sc>${r.score} / 300</div><span class=stamp>${st}</span>
+ <div class=grid style="margin-top:14px;text-align:center"><div class=fb>🎧 一、听<br><b style="font-size:24px">${r.pt.听}</b> / 100<br><span class=m>${r.sec.听[0]}/${r.sec.听[1]} câu đúng</span></div><div class=fb>📖 二、读<br><b style="font-size:24px">${r.pt.读}</b> / 100<br><span class=m>${r.sec.读[0]}/${r.sec.读[1]} câu đúng</span></div><div class=fb style="grid-column:1/-1">✍️ 三、写<br><b style="font-size:24px">${r.pt.写}</b> / 100<br><span class=m>${r.sec.写[0]}/${r.sec.写[1]} câu đúng</span></div></div></div>
+ <div class=paper><b>🍃 Các câu cần xem lại:</b> ${r.wrong.length?r.wrong.join(', '):'không có, tuyệt vời!'}<p class=m>Bài đã nộp, không thể làm lại. Hãy chụp màn hình trang này (hoặc gửi mã bên dưới) cho giáo viên.</p>
+ <input type=text readonly value="${code}" onclick="this.select()" style="font-size:12px"><div style="text-align:right;font-size:10px;opacity:.35;letter-spacing:3px;margin-top:6px">${'✿'.repeat(r.lan||1)}</div></div>`}
+if(typeof location!='undefined'&&location.hash=='#reset'){try{localStorage.removeItem(K);localStorage.removeItem(DK)}catch(e){}}
+intro();
+</script></body></html>
