@@ -27,6 +27,8 @@ input[type=text]{font:inherit;font-size:22px;width:100%;padding:12px;border-radi
 </style></head><body><main><div id="app"></div></main>
 <script src="js/data.js"></script>
 <script>
+const VER='v6';
+if(typeof addEventListener=='function')addEventListener('error',e=>{let b=document.getElementById('eb');if(!b){b=document.createElement('div');b.id='eb';b.style.cssText='position:fixed;left:0;right:0;bottom:0;background:#c0392b;color:#fff;padding:8px;font-size:13px;z-index:9';document.body.append(b)}b.textContent='Lỗi: '+e.message});
 const D=RAW.trim().split('\n').map((l,i)=>{const[a,w,v,s]=l.split('|');return{id:'s'+String(i+1).padStart(2,'0'),l:+a,w,v,s}});
 const $=q=>document.querySelector(q),app=$('#app'),norm=s=>s.replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g,''),idx=it=>D.indexOf(it);
 const K='hy13exam',DK='hy13draft',ld=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -50,7 +52,8 @@ function intro(){const r=ld(K);if(r)return result(r);const d=ld(DK)||{};
  app.innerHTML=`<div class=paper><div class=head><span class=mas>🐼</span><div><h1>期中考试 · Thi giữa kỳ</h1><div class=m>Hán ngữ · Bài 13–18</div></div></div></div>
 <div class=paper><p><b>📝 Họ tên:</b> <input type=text id=nm value="${d.name||''}" placeholder="Nhập họ tên…" style="font-size:18px"></p>
 <p><b>🌸 Thể lệ:</b></p><p class=m>• Bài thi gồm <b>54 câu</b>, mỗi từ trong bài 13–18 xuất hiện đúng một lần: 一、听 18 câu · 二、读 18 câu · 三、写 18 câu (mỗi phần 100 điểm, tổng 300 điểm).<br>• Chỉ được nộp bài <b>một lần duy nhất</b>; sau khi nộp không thể làm lại.<br>• Không giới hạn thời gian. Có thể quay lại sửa đáp án trước khi nộp; bài tự lưu nếu lỡ tải lại trang.<br>• Được nghe lại audio nhiều lần. Câu nghe chép: chỉ gõ chữ, không cần cách chữ và dấu câu.<br>• Trong lúc làm bài không hiện đáp án đúng.</p>
-<button class=p style="width:100%" onclick="begin()">✏️ Bắt đầu làm bài</button></div>`}
+<button class=p style="width:100%" onclick="begin()">✏️ Bắt đầu làm bài</button></div>
+<p class=m>Phiên bản ${VER} · <button onclick="play(D[0])" style="padding:4px 10px;border-bottom-width:3px">🔊 Kiểm tra âm thanh</button> <span id=as></span></p>`}
 function begin(){const n=$('#nm').value.trim();if(!n)return alert('Vui lòng nhập họ tên.');S={q:build(),i:0,name:n};const d=ld(DK);
  if(d&&d.name==n&&d.a){S.i=d.i||0;d.a.forEach((v,k)=>{const q=S.q[k];if(!q)return;if(q.t=='order'){const all=[...q.pc];q.an=(v||[]).map(i=>all.find(p=>p.i==i)).filter(Boolean);q.pc=all.filter(p=>!q.an.includes(p))}else q.ans=v})}
  save();show()}
