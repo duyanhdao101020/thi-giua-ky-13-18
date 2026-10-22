@@ -38,7 +38,7 @@ function tts(t){try{const v=speechSynthesis.getVoices();if(v.length&&!v.some(x=>
 function play(it){const a=new Audio('audio/'+it.id+'.mp3');say('');
  a.onerror=()=>{say('⚠️ Không tìm thấy audio/'+it.id+'.mp3, đang dùng giọng đọc của trình duyệt.');tts(it.s)};
  a.onplaying=()=>say('🔊 Đang phát…');a.onended=()=>say('');
- a.play().catch(()=>{if(!a.error)say('⚠️ Trình duyệt chặn phát tiếng, hãy bấm lại nút Nghe (và kiểm tra đã bật loa).')})}window.play=i=>play(D[i]);
+ a.play().catch(()=>{if(!a.error)say('⚠️ Trình duyệt chặn phát tiếng, hãy bấm lại nút Nghe (và kiểm tra đã bật loa).')})}
 const chunks=s=>{const o=[];s.replace(/[。？！]$/,'').split(/[，、；：]/).forEach(c=>{if(!c)return;const k=Math.ceil(c.length/4),z=Math.ceil(c.length/k);for(let i=0;i<c.length;i+=z)o.push(c.slice(i,i+z))});return o};
 const SEC={listen:'🎧 一、听力 · Nghe',read:'📖 二、阅读 · Đọc',type:'✍️ 三、书写 · Viết',order:'✍️ 三、书写 · Viết',dict:'✍️ 三、书写 · Viết'},G=t=>t=='listen'?'听':t=='read'?'读':'写';
 let S={};
