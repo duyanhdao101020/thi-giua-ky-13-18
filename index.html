@@ -24,13 +24,17 @@ input[type=text]{font:inherit;font-size:22px;width:100%;padding:12px;border-radi
 .sc{font-size:54px;font-weight:800;color:var(--a)}
 .opt.sel{background:var(--sun);border-color:var(--a)}.nav{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}
 .nav button{padding:3px 0;width:38px;border-bottom-width:3px;font-size:13px;border-radius:10px}.nav .done{background:var(--mint)}.nav .cur{outline:3px solid var(--a)}
-#dice{position:fixed;left:12px;bottom:12px;width:60px;height:60px;font-size:32px;font-weight:800;border-radius:16px;padding:0;z-index:5;box-shadow:0 4px 0 var(--l);background:var(--c);color:var(--a2);line-height:1}
-#dice.rl{animation:rl .35s linear infinite}@keyframes rl{to{transform:rotate(360deg)}}main{padding-bottom:90px}
+#dice{position:fixed;left:max(8px,calc(50% - 360px - 112px));top:40%;width:96px;height:96px;border-radius:22px;padding:11px;z-index:5;background:var(--c);border:2px solid var(--l);box-shadow:0 6px 0 var(--l)}
+#dice .pg{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);width:100%;height:100%}
+#dice i{display:block;border-radius:50%;margin:11%}#dice i.on{background:var(--a2)}
+#dice.rl{animation:rl .4s linear infinite}@keyframes rl{to{transform:rotate(360deg)}}
+@media(max-width:900px){#dice{left:10px;top:auto;bottom:14px;width:78px;height:78px;padding:9px}}
+main{padding-bottom:100px}
 </style></head><body><main><div id="app"></div></main>
-<button id="dice" onclick="roll()" title="Tung xúc xắc">🎲</button>
+<button id="dice" onclick="roll()" title="Tung xúc xắc"></button>
 <script src="js/data.js"></script>
 <script>
-const VER='v9';
+const VER='v10';
 if(typeof addEventListener=='function')addEventListener('error',e=>{let b=document.getElementById('eb');if(!b){b=document.createElement('div');b.id='eb';b.style.cssText='position:fixed;left:0;right:0;bottom:0;background:#c0392b;color:#fff;padding:8px;font-size:13px;z-index:9';document.body.append(b)}b.textContent='Lỗi: '+e.message});
 const D=RAW.trim().split('\n').map((l,i)=>{const[a,w,v,s]=l.split('|');return{id:'s'+String(i+1).padStart(2,'0'),l:+a,w,v,s}});
 const $=q=>document.querySelector(q),app=$('#app'),norm=s=>s.replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g,''),idx=it=>D.indexOf(it);
@@ -38,7 +42,9 @@ const K='hy13exam',DK='hy13draft',ld=k=>{try{return JSON.parse(localStorage.getI
 const rnd=(()=>{let a=20261021;return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}})();
 const shS=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=rnd()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const cloze=it=>it.s.replace(it.w,'<span class="blank">　　</span>'),hl=it=>it.s.replace(it.w,`<span class="hl">${it.w}</span>`);
-function roll(){const d=document.querySelector('#dice');if(d._r)return;d._r=1;d.classList.add('rl');const iv=setInterval(()=>{d.textContent=1+Math.random()*6|0},70);setTimeout(()=>{clearInterval(iv);d.textContent=1+Math.random()*6|0;d.classList.remove('rl');d._r=0},700)}
+const PIPS=[[],[5],[1,9],[1,5,9],[1,3,7,9],[1,3,5,7,9],[1,3,4,6,7,9]];
+const face=n=>'<div class=pg>'+[1,2,3,4,5,6,7,8,9].map(k=>`<i${PIPS[n].includes(k)?' class=on':''}></i>`).join('')+'</div>';
+function roll(){const d=document.querySelector('#dice');if(d._r)return;d._r=1;d.classList.add('rl');const r=()=>1+Math.random()*6|0;const iv=setInterval(()=>{d.innerHTML=face(r())},80);setTimeout(()=>{clearInterval(iv);d.innerHTML=face(r());d.classList.remove('rl');d._r=0},800)}
 function say(m){const e=document.querySelector('#as');if(e)e.textContent=m}
 function tts(t){try{const v=speechSynthesis.getVoices();if(v.length&&!v.some(x=>/^zh/i.test(x.lang))){say('⚠️ Không có file MP3 và thiết bị không có giọng đọc tiếng Trung. Cần tải thư mục audio lên GitHub.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='zh-CN';u.rate=.8;speechSynthesis.speak(u)}catch(e){say('⚠️ Không phát được âm thanh.')}}
 const AU=new Audio();let tk=0;
@@ -91,5 +97,6 @@ function result(r){const av=r.score/3,st=av>=90?'优秀':av>=75?'良好':av>=60?
  <div class=paper><b>🍃 Các câu cần xem lại:</b> ${r.wrong.length?r.wrong.join(', '):'không có, tuyệt vời!'}<p class=m>Bài đã nộp, không thể làm lại. Hãy chụp màn hình trang này (hoặc gửi mã bên dưới) cho giáo viên.</p>
  <input type=text readonly value="${code}" onclick="this.select()" style="font-size:12px"></div>`}
 if(typeof location!='undefined'&&location.hash=='#reset'){try{localStorage.removeItem(K);localStorage.removeItem(DK)}catch(e){}}
+document.querySelector('#dice').innerHTML=face(5);
 intro();
 </script></body></html>
