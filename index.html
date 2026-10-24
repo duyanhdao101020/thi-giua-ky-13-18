@@ -30,11 +30,18 @@ input[type=text]{font:inherit;font-size:22px;width:100%;padding:12px;border-radi
 #dice.rl{animation:rl .4s linear infinite}@keyframes rl{to{transform:rotate(360deg)}}
 @media(max-width:900px){#dice{left:10px;top:auto;bottom:14px;width:78px;height:78px;padding:9px}}
 main{padding-bottom:100px}
+.tb{position:fixed;left:max(8px,calc(50% - 360px - 112px));width:56px;height:56px;border-radius:16px;padding:9px;z-index:6;background:var(--c);color:var(--t);border:2px solid var(--l);box-shadow:0 4px 0 var(--l)}
+#pen{top:calc(40% + 110px)}#era{top:calc(40% + 176px)}.tb svg{width:100%;height:100%}
+#pen.on{background:var(--a);border-color:var(--a2);color:#fff}
+#cv{position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:4;pointer-events:none;touch-action:none}#cv.on{pointer-events:auto;cursor:crosshair}
+@media(max-width:900px){.tb{top:auto;bottom:14px;width:50px;height:50px;padding:8px}#pen{left:98px}#era{left:156px}}
 </style></head><body><main><div id="app"></div></main>
 <button id="dice" onclick="roll()" title="Tung xúc xắc"></button>
+<button class="tb" id="pen" onclick="penToggle()" title="Bút: bấm để vẽ, bấm lần nữa để về chuột bình thường"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l3.5-.8L19 7.7a2.1 2.1 0 0 0-3-3L3.8 17z"/><path d="M14 6l3 3"/></svg></button>
+<button class="tb" id="era" onclick="eraseAll()" title="Tẩy: xóa hết nét vẽ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg></button>
 <script src="js/data.js"></script>
 <script>
-const VER='v10';
+const VER='v11';
 if(typeof addEventListener=='function')addEventListener('error',e=>{let b=document.getElementById('eb');if(!b){b=document.createElement('div');b.id='eb';b.style.cssText='position:fixed;left:0;right:0;bottom:0;background:#c0392b;color:#fff;padding:8px;font-size:13px;z-index:9';document.body.append(b)}b.textContent='Lỗi: '+e.message});
 const D=RAW.trim().split('\n').map((l,i)=>{const[a,w,v,s]=l.split('|');return{id:'s'+String(i+1).padStart(2,'0'),l:+a,w,v,s}});
 const $=q=>document.querySelector(q),app=$('#app'),norm=s=>s.replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g,''),idx=it=>D.indexOf(it);
@@ -45,6 +52,14 @@ const cloze=it=>it.s.replace(it.w,'<span class="blank">　　</span>'),hl=it=>it
 const PIPS=[[],[5],[1,9],[1,5,9],[1,3,7,9],[1,3,5,7,9],[1,3,4,6,7,9]];
 const face=n=>'<div class=pg>'+[1,2,3,4,5,6,7,8,9].map(k=>`<i${PIPS[n].includes(k)?' class=on':''}></i>`).join('')+'</div>';
 function roll(){const d=document.querySelector('#dice');if(d._r)return;d._r=1;d.classList.add('rl');const r=()=>1+Math.random()*6|0;const iv=setInterval(()=>{d.innerHTML=face(r())},80);setTimeout(()=>{clearInterval(iv);d.innerHTML=face(r());d.classList.remove('rl');d._r=0},800)}
+let cv,cx;
+function fit(){const r=window.devicePixelRatio||1,t=document.createElement('canvas');t.width=cv.width;t.height=cv.height;if(cv.width)t.getContext('2d').drawImage(cv,0,0);cv.width=innerWidth*r;cv.height=innerHeight*r;cx.setTransform(r,0,0,r,0,0);cx.lineCap=cx.lineJoin='round';cx.lineWidth=4;cx.strokeStyle='#e03a6e';if(t.width)cx.drawImage(t,0,0,t.width/r,t.height/r)}
+function initDraw(){cv=document.createElement('canvas');cv.id='cv';document.body.append(cv);cx=cv.getContext('2d');fit();addEventListener('resize',fit);let dr=0;
+ cv.addEventListener('pointerdown',e=>{dr=1;try{cv.setPointerCapture(e.pointerId)}catch(x){}cx.beginPath();cx.moveTo(e.clientX,e.clientY);cx.lineTo(e.clientX+.1,e.clientY+.1);cx.stroke();cx.beginPath();cx.moveTo(e.clientX,e.clientY)});
+ cv.addEventListener('pointermove',e=>{if(!dr)return;cx.lineTo(e.clientX,e.clientY);cx.stroke();cx.beginPath();cx.moveTo(e.clientX,e.clientY)});
+ ['pointerup','pointercancel'].forEach(t=>cv.addEventListener(t,()=>dr=0))}
+function penToggle(){if(!cv)return;const on=cv.classList.toggle('on');document.querySelector('#pen').classList.toggle('on',on)}
+function eraseAll(){if(!cv)return;cx.save();cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,cv.width,cv.height);cx.restore()}
 function say(m){const e=document.querySelector('#as');if(e)e.textContent=m}
 function tts(t){try{const v=speechSynthesis.getVoices();if(v.length&&!v.some(x=>/^zh/i.test(x.lang))){say('⚠️ Không có file MP3 và thiết bị không có giọng đọc tiếng Trung. Cần tải thư mục audio lên GitHub.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='zh-CN';u.rate=.8;speechSynthesis.speak(u)}catch(e){say('⚠️ Không phát được âm thanh.')}}
 const AU=new Audio();let tk=0;
@@ -97,6 +112,6 @@ function result(r){const av=r.score/3,st=av>=90?'优秀':av>=75?'良好':av>=60?
  <div class=paper><b>🍃 Các câu cần xem lại:</b> ${r.wrong.length?r.wrong.join(', '):'không có, tuyệt vời!'}<p class=m>Bài đã nộp, không thể làm lại. Hãy chụp màn hình trang này (hoặc gửi mã bên dưới) cho giáo viên.</p>
  <input type=text readonly value="${code}" onclick="this.select()" style="font-size:12px"></div>`}
 if(typeof location!='undefined'&&location.hash=='#reset'){try{localStorage.removeItem(K);localStorage.removeItem(DK)}catch(e){}}
-document.querySelector('#dice').innerHTML=face(5);
+document.querySelector('#dice').innerHTML=face(5);if(document.createElement)initDraw();
 intro();
 </script></body></html>
